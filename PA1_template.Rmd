@@ -90,6 +90,7 @@ First we need to create a new table that rather than summarizing by date, instea
 dailyTotalAVG <- activityData %>% filter(!is.na(steps)) %>% group_by(interval) %>% summarise(dailyAVGSteps=mean(steps))
 
 head(dailyTotalAVG)
+summary(dailyTotalAVG)
 dailyTotalAVG
 plot(dailyTotalAVG$interval,dailyTotalAVG$dailyAVGSteps,type="l",main="Average Steps per Daily 5-Minute Interval (from OCT-NOV 2012)", ylab="# of Steps", xlab="5-Minute Intervals over 24 Hours")
 
@@ -101,7 +102,7 @@ We should be able to answer this by calculating the maximum value directly utili
 maxSteps <- dailyTotalAVG[which.max(dailyTotalAVG$dailyAVGSteps),][[1]]
 maxSteps
 ```
-#### <b style="color:#117A65"> The 5-Minute Interval `r maxSteps` on average contains the most steps from the entire dataset , which covers the time period from 08:30-08:35</b>
+#### <b style="color:#117A65"> The 5-Minute Interval `r maxSteps` on average contains the most steps from the entire dataset , which covers the time period from 08:35-08:40</b>
 ## <b>Prompt 3 - Inputing missing values</b>
 Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
