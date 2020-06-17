@@ -63,7 +63,6 @@ summary(activityData)
 ### Prompt 1-1: Calculate the total number of steps taken per day
 First, we need to create a new variable 'dailyTotalSteps' in which to store the summary table of daily total steps.
 ```{r,echo=TRUE}
-#dailyTotalSteps <- tapply(activityData$steps,activityData$date,sum,na.rm=TRUE)
 dailyTotalSteps <- activityData %>% group_by(date) %>% summarise(dailySteps=sum(steps))
 ```
 Next, we want to display the head of the new variable to verify we achieved the correct transformation.
@@ -83,13 +82,41 @@ summary(dailyTotalSteps)
 ```
 ### <b style="color:#117A65"><i>Answer: Mean daily steps is 10766. Median daily steps is 10765.</i></b>
 
-## Prompt 2 - What is the average daily activity pattern?
+## <b>Prompt 2 - What is the average daily activity pattern?</b>
+
+### Prompt 2-1: Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+First we need to create a new table that rather than summarizing by date, instead summarizes by 5-minute interval.
+```{r,echo=TRUE}
+dailyTotalAVG <- activityData %>% filter(!is.na(steps)) %>% group_by(interval) %>% summarise(dailyAVGSteps=mean(steps))
+
+head(dailyTotalAVG)
+dailyTotalAVG
+plot(dailyTotalAVG$interval,dailyTotalAVG$dailyAVGSteps,type="l",main="Average Steps per Daily 5-Minute Interval (from OCT-NOV 2012)", ylab="# of Steps", xlab="5-Minute Intervals over 24 Hours")
+
+```
+
+### Prompt 2-2: Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+We should be able to answer this by calculating the maximum value directly utilizing the 'which.max' function:
+```{r,echo=TRUE}
+maxSteps <- dailyTotalAVG[which.max(dailyTotalAVG$dailyAVGSteps),][[1]]
+maxSteps
+```
+#### <b style="color:#117A65"> The 5-Minute Interval `r maxSteps` on average contains the most steps from the entire dataset , which covers the time period from 08:30-08:35</b>
+## <b>Prompt 3 - Inputing missing values</b>
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+### Prompt 3-1: Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+### Prompt 3-2: Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+### Prompt 3-3: Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+### Prompt 3-4: Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 
+## <b>Prompt 4 - Are there differences in activity patterns between weekdays and weekends?</b>
+For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
 
-## Prompt 3 - Inputing missing values
-
-
-
-## Prompt 4 - Are there differences in activity patterns between weekdays and weekends?
-
+### Prompt 4-1: Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+    
+### Prompt 4-2: Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
