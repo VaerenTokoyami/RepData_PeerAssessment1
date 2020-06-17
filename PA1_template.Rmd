@@ -56,6 +56,7 @@ activityData$date <- as.Date(activityData$date,format="%Y-%m-%d")
 ```{r, echo=TRUE}
 head(activityData)
 summary(activityData)
+count(activityData)
 ```
 
 ## <b>Prompt 1 - What is mean total number of steps taken per day?</b>
@@ -72,7 +73,7 @@ head(dailyTotalSteps)
 
 ### Prompt 1-2: If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
 ```{r,echo=TRUE}
-hist(dailyTotalSteps$dailySteps,main = "Histogram: Daily Total Steps Measured October-November 2012",xlab = "Total Daily Steps",ylab="Frequency (# of Days)")
+hist(dailyTotalSteps$dailySteps,main = "Histogram: Daily Total Steps OCT-NOV 2012",xlab = "Total Daily Steps",ylab="Frequency (# of Days)")
 ```
 
 ### Prompt 1-3: Calculate and report the mean and median of the total number of steps taken per day
@@ -103,21 +104,68 @@ maxSteps <- dailyTotalAVG[which.max(dailyTotalAVG$dailyAVGSteps),][[1]]
 maxSteps
 ```
 #### <b style="color:#117A65"> The 5-Minute Interval `r maxSteps` on average contains the most steps from the entire dataset , which covers the time period from 08:35-08:40</b>
+
+
 ## <b>Prompt 3 - Inputing missing values</b>
 Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
 ### Prompt 3-1: Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+```{r,echo=TRUE}
+overallMissing <- sapply(activityData, is.na) %>% sum
+stepsMissing <- sapply(activityData$steps, is.na) %>% sum
+dateMissing <- sapply(activityData$date, is.na) %>% sum
+intervalMissing <- sapply(activityData$interval, is.na) %>% sum
+```
 
+<b><i>The results of calculating the missing values follows:</b></i>
+
+<li>Overall missing datapoints is `r overallMissing`</li>
+
+<li>Overall missing steps values is `r stepsMissing`</li>
+
+<li>Overall missing date values is `r dateMissing`</li>
+
+<li>Overall missing interval values is `r intervalMissing`</li>
+
+
+<b style="color:#117A65"><i>This means we are missing `r round((overallMissing/count(activityData)*100), digits=2)`% of step values.</b></i>
+  
 ### Prompt 3-2: Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+First lets try to plot the dates of the NA's, then we can narrow down the intervals with the most NA's in order to devise a best-fit strategy
+```{r echo=TRUE}
+activityData <- mutate(activityData,NAsteps=is.na(activityData$steps))
+missingSteps <- filter(activityData,NAsteps==TRUE)
+plot(missingSteps$date,missingSteps$interval)
+```
+
+So we are able to determine the majority of the missing data appears to be absent for entire days base on this graph, so the most accurate method for determining missing data would be to use the mean for the 5-minute variable. to substitute for missing data, but given time constraints, we will utilize the overal per interval step median of the steps for the missing data.
+
+
+In the future, I imagine it would be more accurate to take a weekday vs weekend random number within 1 standard deviation from the median for the average of the entire dataset, or preceding and following weeks... something that would more appropriately represent micro-trends within the real-world data.
 
 ### Prompt 3-3: Create a new dataset that is equal to the original dataset but with the missing data filled in.
+```{r,echo=TRUE}
+augmentedData <- activityData
+augmentedData$steps[is.na(augmentedData$steps)] <- mean(augmentedData$steps[!is.na(augmentedData$steps)])
+head(augmentedData)
+```
 
 ### Prompt 3-4: Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+```{r,echo=TRUE}
+dailyAugSteps <- augmentedData %>% group_by(date) %>% summarise(dailySteps=sum(steps))
+hist(dailyAugSteps$dailySteps,main = "Augmented Histogram: Daily Total Steps OCT-NOV 2012",xlab = "Total Daily Steps",ylab="Frequency (# of Days)")
+summary(dailyAugSteps$dailySteps)
+```
+
+### <b style="color:#117A65"><i> The new augmented mean is `r as.integer(mean(dailyAugSteps$dailySteps))` compared to the original dataset mean of `r as.integer(mean(dailyTotalSteps$dailySteps,na.rm=TRUE))`. The new augmented median is `r as.integer(median(dailyAugSteps$dailySteps))` compared to the original median of `r as.integer(median(dailyTotalSteps$dailySteps,na.rm=TRUE))`. While the mean remained the same, the median increased due to the increase in the overall median by the replacement of newly counted step counts per interval from not counting towards the overall total median value to having individual values ~ 37, which would over the long term increase the overall activity from periods of lesser movement, such as when folks are sleeping.</i></b>
 
 
 ## <b>Prompt 4 - Are there differences in activity patterns between weekdays and weekends?</b>
 For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
 
+Note: Since the instructions DO NOT SPECIFIY whether to use the new, partially synthetic dataset or the source data, I will use the NEW dataset to rule-out the missing data having been from weekends...
+
 ### Prompt 4-1: Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
     
 ### Prompt 4-2: Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
