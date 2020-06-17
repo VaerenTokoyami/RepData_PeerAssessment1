@@ -1,9 +1,14 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
+title: "Reproducible Research: Assessment 1"
+author: "Sean McHugh"
+date: "17 June 2020"
 output: 
   html_document:
     keep_md: true
 ---
+
+## Introduction: Why are we here?
+This is the first assignment for the Reproducible Research Course which is part of the Johns Hopkins University Data Science Specialization hosted on Coursera. The purpose of this assignment will be to demonstrate the ability to utilize R markdown files and the knitr process to transform the explanation and display of the R code for the exploration of data into a 'human readable' format. To accomplish this goal, the assignment utilizes activity monitoring data collected on personal digital devices. The dataset we will explore is a CSV file with a total of 17,568 observations (according to the assignment prompt), but we will only be examining a subset of the data from October and November 2012.
 
 
 ## Loading and preprocessing the data
