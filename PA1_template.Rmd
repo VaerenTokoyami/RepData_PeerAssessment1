@@ -166,6 +166,17 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 Note: Since the instructions DO NOT SPECIFIY whether to use the new, partially synthetic dataset or the source data, I will use the NEW dataset to rule-out the missing data having been from weekends...
 
 ### Prompt 4-1: Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+First we need to augment the new dataset to utilize the weekdays function to identify the day of week for each step measurement, then we can separate that into Weekday and Weekend Columns. In an ideal work we would make this function efficient, but its 'Pandemic Times'... so I'm proud to just be able to complete the assignment...
 
-    
+```{r, echo=TRUE}
+#augmentedData <- mutate(augmentedData, "Weekday"=grepl("Monday|Tuesday|Wednesday|Thursday|Friday",weekdays(augmentedData$date,abbreviate=FALSE)))
+augmentedData$WeekDayEnd <- factor((weekdays(augmentedData$date) %in% c('Monday','Tuesday','Wednesday','Thursday','Friday')), levels = c(FALSE,TRUE), labels = c('Weekend','Weekday'))
+augmentedDataSteps <- augmentedData %>% group_by(interval,WeekDayEnd) %>% summarise(steps=mean(steps))
+head(augmentedDataSteps)
+```
+
 ### Prompt 4-2: Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+First we create the stacked plot-parameters, then we complete each individual plot:
+```{r, echo=TRUE}
+qplot(interval, steps, data = augmentedDataSteps, facets=WeekDayEnd ~ ., main = "Average Steps per 5-Minute Interval for Weekdays vs. Weekends") + geom_line()
+```
