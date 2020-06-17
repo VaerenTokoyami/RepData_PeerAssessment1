@@ -11,20 +11,52 @@ output:
 This is the first assignment for the Reproducible Research Course which is part of the Johns Hopkins University Data Science Specialization hosted on Coursera. The purpose of this assignment will be to demonstrate the ability to utilize R markdown files and the knitr process to transform the explanation and display of the R code for the exploration of data into a 'human readable' format. To accomplish this goal, the assignment utilizes activity monitoring data collected on personal digital devices. The dataset we will explore is a CSV file with a total of 17,568 observations (according to the assignment prompt), but we will only be examining a subset of the data from October and November 2012.
 
 
-## Loading and preprocessing the data
+## Step 0 - Loading and preprocessing the data
+In order to prepare the data, we will preload the R packages for use in this project, download the data from the URL provided in the assignment prompt, unzip the data file, and read the file into memory.
+
+#### Step 0.1 - Load the R Packages Required for this Assignment
+```{r,echo=TRUE,message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(data.table)
+```
+
+#### Step 0.2 - Create Source Data Variables
+```{r,echo=TRUE}
+SourceURL <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+SourceFileName <- "repdata_data_activity.zip"
+SourceDest <- "activity.csv"
+```
+
+#### Step 0.3 - Verify/Download the Source Data
+```{r,echo=TRUE}
+if(!file.exists(SourceFileName)) {
+  download.file(SourceURL,SourceFileName,method='curl')
+}
+```
+
+#### Step 0.4 - Verify/Unzip the Source Data
+```{r,echo=TRUE}
+if(!file.exists(SourceDest)) {
+  unzip(SourceFileName)
+}
+```
+
+#### Step 0.5 - Read the Source Data
+```{r,echo=TRUE}
+activityData <- read.csv("activity.csv")
+```
+
+## Step 1 - What is mean total number of steps taken per day?
 
 
 
-## What is mean total number of steps taken per day?
+## Step 2 - What is the average daily activity pattern?
 
 
 
-## What is the average daily activity pattern?
+## Step 3 - Inputing missing values
 
 
 
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+## Step 4 - Are there differences in activity patterns between weekdays and weekends?
